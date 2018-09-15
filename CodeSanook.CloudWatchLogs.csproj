@@ -116,9 +116,6 @@
     <Compile Include="ShellEvent.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Styles.less" />
-    <Content Include="Styles\Styles.css" />
-    <Content Include="Styles\Styles.min.css" />
     <Content Include="packages.config" />
     <Content Include="Web.config" />
     <Content Include="Scripts\Web.config" />
@@ -146,11 +143,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Assets\" />
     <Folder Include="Models\" />
     <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\..\packages\AWSSDK.CloudWatchLogs.3.3.2\analyzers\dotnet\cs\AWSSDK.CloudWatchLogs.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.md" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
