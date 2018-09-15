@@ -22,6 +22,7 @@ namespace CodeSanook.CloudWatchLogs.Controllers
         {
             var moduleName = ModuleHelper.GetModuleName<TestController>();
             Logger.Warning($"Hello world from {moduleName}");
+            Logger.Error($"Hello world from {moduleName}");
             return Content("log message sent to CloudWatch Logs");
         }
     }
