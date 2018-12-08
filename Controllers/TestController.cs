@@ -21,6 +21,7 @@ namespace CodeSanook.CloudWatchLogs.Controllers
         public ActionResult Index()
         {
             var moduleName = ModuleHelper.GetModuleName<TestController>();
+            Logger.Information($"Hello world from {moduleName}");
             Logger.Warning($"Hello world from {moduleName}");
             Logger.Error($"Hello world from {moduleName}");
             return Content("log message sent to CloudWatch Logs");
