@@ -4,19 +4,22 @@ using CodeSanook.Configuration.Models;
 using log4net;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
-using Orchard.ContentManagement;
+using NHibernate.Transform;
+using Orchard.Data;
 using Orchard.Environment;
-using Orchard.Settings;
+using System.Collections;
+using System.Linq;
 
 namespace CodeSanook.CloudWatchLogs
 {
     //https://stackoverflow.com/a/9029457/1872200
     public class ShellEvent : IOrchardShellEvents
     {
-        private readonly ISiteService siteService;
-        public ShellEvent(ISiteService siteService)
+        private readonly ITransactionManager transactionManager;
+
+        public ShellEvent(ITransactionManager transactionManager)
         {
-            this.siteService = siteService;
+            this.transactionManager = transactionManager;
         }
 
         public void Activated()
@@ -39,11 +42,24 @@ namespace CodeSanook.CloudWatchLogs
             };
             patternLayout.ActivateOptions();
 
-            var setting = this.siteService.GetSiteSettings().As<ModuleSettingPart>();
+            var session = transactionManager.GetSession();
+            var setting = session.QueryOver<ModuleSettingPartRecord>()
+                .SelectList(list => list
+                    .Select(p => p.AwsAccessKey)
+                    .Select(p => p.AwsSecretKey)
+                )
+                .TransformUsing(Transformers.AliasToEntityMap)
+                .List<IDictionary>()
+                .FirstOrDefault();
+                   
+
             var appender = new AWSAppender
             {
                 Layout = patternLayout,
-                Credentials = new BasicAWSCredentials(setting.AwsAccessKey, setting.AwsSecretKey),
+                Credentials = new BasicAWSCredentials(
+                    setting[nameof(ModuleSettingPartRecord.AwsAccessKey)].ToString(), 
+                    setting[nameof(ModuleSettingPartRecord.AwsSecretKey)].ToString()
+                ),
                 LogGroup = "CodeSanook.CloudWatchLog",
                 Region = "ap-southeast-1"
             };
