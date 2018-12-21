@@ -7,6 +7,8 @@ using log4net.Repository.Hierarchy;
 using NHibernate.Transform;
 using Orchard.Data;
 using Orchard.Environment;
+using Orchard.Logging;
+using System;
 using System.Collections;
 using System.Linq;
 
@@ -16,18 +18,27 @@ namespace CodeSanook.CloudWatchLogs
     public class ShellEvent : IOrchardShellEvents
     {
         private readonly ITransactionManager transactionManager;
+        public ILogger Logger { get; set; }
 
         public ShellEvent(ITransactionManager transactionManager)
         {
             this.transactionManager = transactionManager;
+            this.Logger = NullLogger.Instance;
         }
 
         public void Activated()
         {
-            var hierarchy = ((Hierarchy)LogManager.GetRepository());
-            var rootLogger = hierarchy.Root;
-            var appender = CreateCloudWatchLogAppender();
-            rootLogger.AddAppender(appender);
+            try
+            {
+                var hierarchy = ((Hierarchy)LogManager.GetRepository());
+                var rootLogger = hierarchy.Root;
+                var appender = CreateCloudWatchLogAppender();
+                rootLogger.AddAppender(appender);
+
+            }catch(Exception ex)
+            {
+                Logger.Error(ex, ex.Message);
+            }
         }
 
         public void Terminating()
