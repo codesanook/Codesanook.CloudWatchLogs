@@ -1,6 +1,6 @@
 ﻿using Amazon.Runtime;
 using AWS.Logger.Log4net;
-using CodeSanook.Configuration.Models;
+using Codesanook.Configuration.Models;
 using log4net;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
@@ -10,40 +10,28 @@ using Orchard.Environment;
 using System.Collections;
 using System.Linq;
 
-namespace CodeSanook.CloudWatchLogs
-{
+namespace Codesanook.CloudWatchLogs {
     //https://stackoverflow.com/a/9029457/1872200
-    public class ShellEvent : IOrchardShellEvents
-    {
+    public class ShellEvent : IOrchardShellEvents {
         private readonly ITransactionManager transactionManager;
 
-        public ShellEvent(ITransactionManager transactionManager)
-        {
+        public ShellEvent(ITransactionManager transactionManager) =>
             this.transactionManager = transactionManager;
+
+        public void Activated() => AddCloudWatchLogAppender();
+
+        public void Terminating() {
         }
 
-        public void Activated()
-        {
-            AddCloudWatchLogAppender();
-        }
-
-        public void Terminating()
-        {
-        }
-
-        private void AddCloudWatchLogAppender()
-        {
+        private void AddCloudWatchLogAppender() {
             var hierarchy = ((Hierarchy)LogManager.GetRepository());
             var rootLogger = hierarchy.Root;
             var appender = CreateCloudWatchLogAppender();
             rootLogger.AddAppender(appender);
         }
 
-
-        private AWSAppender CreateCloudWatchLogAppender()
-        {
-            var patternLayout = new PatternLayout
-            {
+        private AWSAppender CreateCloudWatchLogAppender() {
+            var patternLayout = new PatternLayout {
                 ConversionPattern = "%utcdate{yyyy-MM-ddTHH:mm:ss.fffZ} [%-5level] %logger - %message%newline"
             };
             patternLayout.ActivateOptions();
@@ -60,8 +48,7 @@ namespace CodeSanook.CloudWatchLogs
                 .List<IDictionary>()
                 .FirstOrDefault();
 
-            var appender = new AWSAppender
-            {
+            var appender = new AWSAppender {
                 Layout = patternLayout,
                 Credentials = new BasicAWSCredentials(
                     setting[nameof(ModuleSettingPartRecord.AwsAccessKey)].ToString(),
