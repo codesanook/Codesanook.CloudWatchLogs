@@ -1,9 +1,9 @@
-﻿Name: CodeSanook.CloudWatchLogs
+﻿Name: Codesanook.CloudWatchLogs
 AntiForgery: enabled
 Author: Aaron
-Website: http://codesanook.com
+Website: https://www.codesanook.com
 Version: 1.0
 OrchardVersion: 1.0
 Description: A module to dynamic attach AWS CloudWatch Logs to log4net root logger
 Category: Web
-Dependencies: CodeSanook.Common, CodeSanook.Configuration
+Dependencies: Codesanook.Common, Codesanook.Configuration
